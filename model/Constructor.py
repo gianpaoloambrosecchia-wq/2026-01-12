@@ -7,10 +7,10 @@ class Constructor:
     constructorRef: str
     name: str
     nationality: str
-    oldest_driver_dob: datetime.date = None
+    url: str
 
     def __hash__(self):
         return hash(self.constructorId)
 
     def __str__(self):
-        return f"{self.constructorRef} ({self.name})"
+        return f"{self.name}"
