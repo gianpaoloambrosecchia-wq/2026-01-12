@@ -78,5 +78,52 @@ class Controller:
 
 
     def handleCerca(self, e):
-        pass
+        k = self._view._txtInK.value
+        if k=="":
+            self._view.txt_result.controls.clear()
+            self._view.txt_result.controls.append(
+                ft.Text("Inserire un numero", color="red")
+            )
+            self._view.update_page()
+            return
+        try:
+            kInt = int(k)
+        except ValueError:
+            self._view.txt_result.controls.clear()
+            self._view.txt_result.controls.append(
+                ft.Text("Inserire un numero intero", color="red")
+            )
+            self._view.update_page()
+            return
+
+        if kInt <= 0:
+            self._view.txt_result.controls.clear()
+            self._view.txt_result.controls.append(
+                ft.Text("Inserire un numero intero positivo", color="red")
+            )
+            self._view.update_page()
+            return
+
+        self._model.cerca(kInt)
+        lista_costr = self._model._solBest
+        scarto = self._model._scartoBest
+        self._view.txt_result.controls.clear()
+        self._view.txt_result.controls.append(
+            ft.Text(f"Lo scarto di età è di {scarto} giorni")
+        )
+        piu_anziano = max(lista_costr, key = lambda c: c.oldest_driver_dob)
+        piu_giovane = min(lista_costr, key = lambda c: c.oldest_driver_dob)
+
+        self._view.txt_result.controls.append(
+            ft.Text(f"Il costruttore con il pilota più anziano è {piu_anziano}")
+        )
+        self._view.txt_result.controls.append(
+            ft.Text(f"Il costruttore con il pilota più giovane è {piu_giovane}")
+        )
+
+        for c in lista_costr:
+            self._view.txt_result.controls.append(
+                ft.Text(c)
+            )
+        self._view.update_page()
 

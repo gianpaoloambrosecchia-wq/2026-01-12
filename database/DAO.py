@@ -12,7 +12,9 @@ class DAO():
         results = []
 
         cursor = conn.cursor(dictionary=True)
-        query = "SELECT distinct year FROM seasons s  ORDER BY year"
+        query = """SELECT distinct year 
+                 FROM races
+                 order by year asc"""
 
         cursor.execute(query)
 
@@ -24,7 +26,25 @@ class DAO():
         return results
 
     @staticmethod
-    def getAllNodes(anno1, anno2):
+    def getAllConstructors():
+        conn = DBConnect.get_connection()
+
+        results = []
+
+        cursor = conn.cursor(dictionary=True)
+        query = "SELECT * FROM constructors"
+
+        cursor.execute(query)
+
+        for row in cursor:
+            results.append(Constructor(**row))
+
+        cursor.close()
+        conn.close()
+        return results
+
+    @staticmethod
+    def getAllNodes(anno1, anno2, idMap):
         conn = DBConnect.get_connection()
 
         results = []
@@ -34,7 +54,7 @@ class DAO():
         # RICORDA!!
         # - is not null per verificare che un campo non sia nullo
         # - nomeTabella.* per prendere tutti i dati di una sola tabella (se faccio il join tra piu tabelle)
-        query = """select distinct c.*
+        query = """select distinct c.constructorId
                     from constructors c, results re, races ra
                     where c.constructorId = re.constructorId and re.raceId = ra.raceId and re.position is not null
                     and ra.year >= %s and ra.year <= %s
@@ -43,7 +63,7 @@ class DAO():
         cursor.execute(query, (anno1, anno2))
 
         for row in cursor:
-            results.append(Constructor(**row))
+            results.append(idMap[row["constructorId"]])
 
         cursor.close()
         conn.close()
@@ -88,4 +108,32 @@ class DAO():
         cursor.close()
         conn.close()
         return results
+
+
+    @staticmethod
+    def getPilotaPiuAnzianoPerCostruttore(idMap):
+        conn = DBConnect.get_connection()
+
+        results = []
+
+        cursor = conn.cursor(dictionary=True)
+        query = """select c.constructorId , min(d.dob) as piu_anziano
+                    from constructors c, results r, drivers d 
+                    where c.constructorId = r.constructorId and d.driverId = r.driverId
+                    group by c.constructorId"""
+
+
+        cursor.execute(query)
+
+        for row in cursor:
+            if row["constructorId"] not in idMap:
+                continue
+            c = idMap[row["constructorId"]]
+            c.oldest_driver_dob = row["piu_anziano"]  # nome colonna corretto
+
+        cursor.close()
+        conn.close()
+
+
+
 
