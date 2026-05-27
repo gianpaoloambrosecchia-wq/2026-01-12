@@ -129,7 +129,7 @@ class Model:
             return True
 
         # Verifico, per ogni costruttore in parziale, che il costruttore che voglio aggiungere
-        # non faccia parte della componente connessa
+        # non faccia parte della componente connessa.
         for con in parziale:
             albero = nx.bfs_tree(self._graph, con)
             if c in albero.nodes:
