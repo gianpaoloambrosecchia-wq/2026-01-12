@@ -52,7 +52,9 @@ class Model:
         if self.getNumEdges() < 3:
             return self._graph.edges
 
-        # Ordino in ordine decrescente (reverse = True) gli archi in base al peso
+        # Ordino in ordine decrescente (reverse = True) gli archi in base al peso e prendo i primi 3 (cioè
+        # i primi 3 con peso maggiore)
+        # RICORDA!!! data=True per considerare il peso
         archi_ordinati = sorted(self._graph.edges(data = True), key = lambda x: x[2]["weight"], reverse = True)
         primiTreArchi = []
         for i in range(0, 3):
@@ -75,6 +77,7 @@ class Model:
         print(f"Nodi con dob valido: {sum(1 for n in self._graph.nodes if n.oldest_driver_dob is not None)}")
         parziale = []
         self._solBest = []
+        self._scartoBest = 0
         self._ricorsione(parziale,k)
 
 
